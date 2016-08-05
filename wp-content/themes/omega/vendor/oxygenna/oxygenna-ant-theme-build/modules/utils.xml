@@ -1,0 +1,45 @@
+<project>
+    <scriptdef language="javascript" name="lower">
+        <attribute name="string" />
+        <attribute name="to" />
+        project.setProperty( attributes.get( "to" ), attributes.get( "string" ).toLowerCase() );
+    </scriptdef>
+
+    <macrodef name="assemble">
+        <attribute name="dir" default="html"/>
+        <attribute name="grunt" default="build"/>
+        <sequential>
+            <echo message="npm install" />
+            <exec executable="bash" dir="@{dir}">
+                <arg value="-c"/>
+                <arg value="npm install"/>
+            </exec>
+
+            <echo message="bower install" />
+            <exec executable="bash" dir="@{dir}">
+                <arg value="-c"/>
+                <arg value="bower install"/>
+            </exec>
+
+            <echo message="grunt build" />
+            <exec executable="bash" dir="@{dir}">
+                <arg value="-c"/>
+                <arg value="grunt @{grunt}"/>
+            </exec>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="upload-to-tf">
+        <attribute name="dir" default="html"/>
+        <sequential>
+            <ftp action="del" server="ftp.marketplace.envato.com" userid="oxygenna" password="ataj9qx9s5895lxw31pxfria748567us">
+                <fileset>
+                    <include name="*"/>
+                </fileset>
+            </ftp>
+            <ftp server="ftp.marketplace.envato.com" userid="oxygenna" password="ataj9qx9s5895lxw31pxfria748567us">
+                <fileset dir="@{dir}/themeforest" />
+            </ftp>
+        </sequential>
+    </macrodef>
+</project>

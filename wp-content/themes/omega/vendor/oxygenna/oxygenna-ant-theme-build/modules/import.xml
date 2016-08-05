@@ -1,0 +1,15 @@
+<project>
+    <target name="create-snapshot">
+        <echo message="Remove old images..." />
+        <exec executable="bash" dir="import/images">
+            <arg value="-c"/>
+            <arg value="rm -rf *"/>
+        </exec>
+
+        <echo message="Downloading files from image-list.txt..." />
+        <exec executable="bash" dir="import">
+            <arg value="-c"/>
+            <arg value="cat image-list.txt | xargs wget -P images/"/>
+        </exec>
+    </target>
+</project>
