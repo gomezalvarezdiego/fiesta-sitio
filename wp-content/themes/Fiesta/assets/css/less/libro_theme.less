@@ -32,6 +32,12 @@ body{
 
     }
 
+    .img-menu{
+        margin-bottom: 30px;
+    }
+
+
+
     .sticky-wrapper{
         background-color: #FFFFFF;
     }
@@ -194,6 +200,27 @@ body{
                     margin-bottom: 30px;
                 }
         }
+        
+        #home-menu{
+            padding-top: @home-section-padding-top;
+            overflow: hidden;
+            h1{
+                &.mde-line-title{
+                    margin-bottom: 50px;
+                }
+            }
+            img{
+                display: block;
+                margin: auto;
+            }
+
+            .content{
+                margin-top: 15px;
+                text-align: center;
+                line-height: 1.3;
+            }
+        }
+
         #home-institutional{
             padding-top: @home-section-padding-top;
             padding-bottom: @home-section-padding-bottom;
@@ -215,6 +242,7 @@ body{
             }
         }
 
+        
         .title{
             h1{
                 a{

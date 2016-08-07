@@ -233,6 +233,31 @@ body{
 
       }
 
+      #home-menu{
+        .multimedia-box{
+          .img-holder{
+            box-shadow: 0 1px 3px rgba(169, 169, 169, 0.56);
+            img{
+                .transition(all 700ms cubic-bezier(0.215, 0.610, 0.355, 1.000));
+                height: 150px;
+                max-width: 100%;              
+            }
+          }
+          .box-content{
+              .content{
+                height: 80px;
+                overflow: hidden;
+                text-align: left;  
+              }
+          }
+          &:hover{
+            img{
+              .filter(grayscale(65%));
+            }
+          }
+        }
+      }
+
     }
   }
 }
