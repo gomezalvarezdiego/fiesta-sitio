@@ -19,7 +19,7 @@
         $post_title=$post->post_title;
         $post_content=$post->post_content;
         $post_excerpt=$post->post_excerpt;
-        $image_size='institucional';
+        $image_size='Box_menu';
     	$img=wp_get_attachment_image_src(get_post_thumbnail_id($post_id), $image_size );
 		$img_alt=get_post_meta(get_post_thumbnail_id($post_id), '_wp_attachment_image_alt', true);
 		$url_img=$img[0];

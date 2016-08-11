@@ -41,6 +41,7 @@ include MDE_THEME_DIR . 'inc/options/shortcodes/shortcodes.php';
 
 add_image_size('Home-entrada', '357', '239',true);
 add_image_size('Multimedia', '532', '261',true);
+add_image_size('Box_menu', '250', '250',true);
 add_image_size('Institucional', '248', '160',true);
 
 
