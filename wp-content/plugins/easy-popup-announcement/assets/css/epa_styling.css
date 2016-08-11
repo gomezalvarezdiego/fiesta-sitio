@@ -1,3 +1,7 @@
+#my_popup_background{
+	opacity:0.8 !important;
+}
+
 .well h4 {
 	font-size: 18px;
 	margin-top: 10px;
@@ -21,6 +25,7 @@
 }
 #my_popup {
 	line-height: 18px;
+	background-color:rgba(255,255,255,0);
 }
 #my_popup p {
 	padding-top: 10px;
