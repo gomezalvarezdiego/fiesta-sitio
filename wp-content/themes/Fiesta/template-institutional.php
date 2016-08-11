@@ -42,9 +42,7 @@
 							<div class="img-holder" >
 								<?php echo $print_rel_open; ?> <img src="<?php echo $url_img ?>" alt="<?php echo $post_excerpt ?>"><?php echo $print_rel_close; ?>
 							</div>
-							<div class="box-content">
-									<div class="content"><?php echo $post_excerpt ?></div> 
-							</div>
+							
 						</div>	
 					</article>
 
