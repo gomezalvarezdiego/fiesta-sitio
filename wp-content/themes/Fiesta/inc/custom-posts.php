@@ -31,7 +31,7 @@ $args = array(
     'hierarchical'       => false,
     'menu_position'      => null,
     'menu_icon'          => 'dashicons-welcome-learn-more',
-    'supports'           => array( 'title', 'editor', 'thumbnail', 'page-attributes', 'revisions','excerpt')
+    'supports'           => array( 'title', 'thumbnail')
 );
 register_post_type('box_menu', $args);
 
