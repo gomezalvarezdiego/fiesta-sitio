@@ -36,7 +36,7 @@
 	 		"postInfo"=>$postInfo						
 	 	);
 	 	$module=$key+1;
-	 	if($module % 4==0 && $key!=0 ){
+	 	if($module % 5==0 && $key!=0 ){
 	 		$contentVarsHolder[$setCardsCounter]=$arrayHolder;
 	 		$arrayHolder=array();
 	 		$setCardsCounter++;
@@ -76,7 +76,7 @@
 		?>	        
 		
 			
-					<article data-os-animation-delay="0s" data-os-animation="fadeIn" class="col-md-3  col-xs-6 multimedia-box os-animation" >
+					<article data-os-animation-delay="0s" data-os-animation="fadeIn" class="col-md-2 col-md-offset-1 col-xs-6 multimedia-box os-animation" >
 						<div>
 							<div class="img-holder img-menu" >
 								<?php echo $print_rel_open; ?> <img src="<?php echo $url_img ?>"> <?php echo $print_rel_close; ?>
@@ -99,7 +99,7 @@
 		?>	        
 		
 			
-					<article data-os-animation-delay="0s" data-os-animation="fadeIn" class="col-md-3 col-xs-6 multimedia-box os-animation" >
+					<article data-os-animation-delay="0s" data-os-animation="fadeIn" class="col-md-2 col-xs-6 multimedia-box os-animation" >
 						<div>
 							<div class="img-holder img-menu" >
 								<?php echo $print_rel_open; ?> <img src="<?php echo $url_img ?>"> <?php echo $print_rel_close; ?>
@@ -121,7 +121,7 @@
 		?>	        
 		
 			
-					<article data-os-animation-delay="0s" data-os-animation="fadeIn" class="col-md-3 col-xs-6 multimedia-box os-animation" >
+					<article data-os-animation-delay="0s" data-os-animation="fadeIn" class="col-md-2 col-xs-6 multimedia-box os-animation" >
 						<div>
 							<div class="img-holder img-menu" >
 								<?php echo $print_rel_open; ?> <img src="<?php echo $url_img ?>"> <?php echo $print_rel_close; ?>
@@ -144,7 +144,29 @@
 		?>	        
 		
 			
-					<article data-os-animation-delay="0s" data-os-animation="fadeIn" class="col-md-3 col-xs-6 multimedia-box os-animation" >
+					<article data-os-animation-delay="0s" data-os-animation="fadeIn" class="col-md-2 col-xs-6 multimedia-box os-animation" >
+						<div>
+							<div class="img-holder img-menu" >
+								<?php echo $print_rel_open; ?> <img src="<?php echo $url_img ?>"> <?php echo $print_rel_close; ?>
+							</div>
+						</div>	
+					</article>
+
+					<?php
+
+					$post_id=$contentVars[4]['id'];
+			        $post_title=$contentVars[4]['titulo'];
+					$img=wp_get_attachment_image_src(get_post_thumbnail_id($post_id), 'box_menu' );
+					$url_img=$img[0];
+			        $permalink = get_permalink($post_id);
+			        $postInfo=previewPostContent($post_content,$post_excerpt,$limit=300);
+			        $enlace=get_post_meta($post_id,'enlace');
+			        $print_rel_open=($enlace[0])?'<a href="'.$enlace[0].'" target="_blank">':'';
+			        $print_rel_close=($enlace[0])?'</a>':'';
+		?>	        
+		
+			
+					<article data-os-animation-delay="0s" data-os-animation="fadeIn" class="col-md-2 col-xs-6 multimedia-box os-animation" >
 						<div>
 							<div class="img-holder img-menu" >
 								<?php echo $print_rel_open; ?> <img src="<?php echo $url_img ?>"> <?php echo $print_rel_close; ?>
