@@ -21,6 +21,7 @@
         <?php wp_head(); ?>
     </head>
     <body <?php body_class('FD_BOOK'); ?>>
+        <?php include_once("analyticstracking.php") ?>
         <div class="header-top-bar">
             <div class="row">
                 <div class="col-md-8 no-padding">
