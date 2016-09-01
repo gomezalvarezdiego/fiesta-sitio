@@ -158,14 +158,14 @@
 
             }
             else if ( 'form' == use_case ) {
+                // Make shortcode into [pods-form]
+                shortcode += '-form';
+
                 if ( pod_select.length )
                     shortcode += ' name="' + pod_select + '"';
 
                 if ( slug.length )
                     shortcode += ' slug="' + slug + '"';
-
-                if ( fields.length || label.length || thank_you.length )
-                    shortcode += ' form="1"';
 
                 if ( fields.length )
                     shortcode += ' fields="' + fields + '"';
@@ -174,7 +174,7 @@
                     shortcode += ' label="' + label + '"';
 
                 if ( thank_you.length )
-                    shortcode += ' thank-you="' + thank_you + '"';
+                    shortcode += ' thank_you="' + thank_you + '"';
 
             }
             else if ( 'view' == use_case ) {

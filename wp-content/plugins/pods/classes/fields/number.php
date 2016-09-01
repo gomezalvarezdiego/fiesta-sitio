@@ -291,7 +291,7 @@ class PodsField_Number extends PodsField {
             $dot = ',';
         }
         else {
-            $thousands = $wp_locale->number_format[ 'thousands_sep' ];
+            $thousands = html_entity_decode( $wp_locale->number_format['thousands_sep'] );
             $dot = $wp_locale->number_format[ 'decimal_point' ];
         }
 
@@ -336,11 +336,12 @@ class PodsField_Number extends PodsField {
             $dot = ',';
         }
         else {
-            $thousands = $wp_locale->number_format[ 'thousands_sep' ];
+            $thousands = html_entity_decode( $wp_locale->number_format['thousands_sep'] );
             $dot = $wp_locale->number_format[ 'decimal_point' ];
         }
 
         $check = str_replace( array( $thousands, $dot ), array( '', '.' ), $value );
+	$check = trim( $check );
 
         $check = preg_replace( '/[0-9\.\-]/', '', $check );
 
@@ -390,11 +391,12 @@ class PodsField_Number extends PodsField {
             $dot = ',';
         }
         else {
-            $thousands = $wp_locale->number_format[ 'thousands_sep' ];
+            $thousands = html_entity_decode( $wp_locale->number_format['thousands_sep'] );
             $dot = $wp_locale->number_format[ 'decimal_point' ];
         }
 
         $value = str_replace( array( $thousands, $dot ), array( '', '.' ), $value );
+	$value = trim( $value );
 
         $value = preg_replace( '/[^0-9\.\-]/', '', $value );
 

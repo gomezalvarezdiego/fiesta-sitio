@@ -312,7 +312,7 @@ class PodsField_Currency extends PodsField {
 		// Multiple sign currencies: 100 Fr, Kr 100
 		$currency_gap = '';
 
-		if ( strlen( $currency_sign ) > 1 ) {
+		if ( strlen( $currency_sign ) > 1 && false === strpos( $currency_sign, '&' ) ) {
 			$currency_gap = ' ';
 		}
 
@@ -493,7 +493,8 @@ class PodsField_Currency extends PodsField {
 
 		$currency_sign = self::$currencies[ $currency ];
 
-		$check = str_replace( array( $thousands, $dot, $currency_sign ), array( '', '.', '' ), $value );
+		$check = str_replace( array( $thousands, $dot, $currency_sign, html_entity_decode( $currency_sign ) ), array( '', '.', '', '' ), $value );
+		$check = trim( $check );
 
 		$check = preg_replace( '/[0-9\.\-]/', '', $check );
 
@@ -562,7 +563,8 @@ class PodsField_Currency extends PodsField {
 
 		$currency_sign = self::$currencies[ $currency ];
 
-		$value = str_replace( array( $thousands, $dot, $currency_sign ), array( '', '.', '' ), $value );
+		$value = str_replace( array( $thousands, $dot, $currency_sign, html_entity_decode( $currency_sign ) ), array( '', '.', '', '' ), $value );
+		$value = trim( $value );
 
 		$value = preg_replace( '/[^0-9\.\-]/', '', $value );
 

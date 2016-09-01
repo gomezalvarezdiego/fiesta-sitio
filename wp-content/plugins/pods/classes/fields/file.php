@@ -153,6 +153,20 @@ class PodsField_File extends PodsField {
                 'default' => apply_filters( 'pods_form_ui_field_file_extensions_default', '' ),
                 'type' => 'text'
             ),/*
+            self::$type . '_field_template' => array(
+                'label' => __( 'Field template', 'pods' ),
+                'default' => apply_filters( 'pods_form_ui_field_file_template_default', 'rows' ),
+                'depends-on' => array( self::$type . '_type' => 'images' ),
+                'type' => 'pick',
+                'data' => apply_filters(
+                    'pods_form_ui_field_file_type_templates',
+                    array(
+                        'rows' => __( 'Rows', 'pods' ),
+                        'tiles' => __( 'Tiles', 'pods' ),
+                    )
+                ),
+                'dependency' => true
+            ),
             self::$type . '_image_size' => array(
                 'label' => __( 'Excluded Image Sizes', 'pods' ),
                 'description' => __( 'Image sizes not to generate when processing the image', 'pods' ),
@@ -477,8 +491,12 @@ class PodsField_File extends PodsField {
         if ( empty( $id ) )
             $id = '{{id}}';
 
-        if ( empty( $icon ) )
-            $icon = '{{icon}}';
+        if ( empty( $icon ) ) {
+	        $icon = '{{icon}}';
+        }else{
+	        $icon = esc_url( $icon );
+        }
+
 
         if ( empty( $name ) )
             $name = '{{name}}';
@@ -498,7 +516,7 @@ class PodsField_File extends PodsField {
             <?php } ?>
 
             <li class="pods-file-col pods-file-icon">
-                <img class="pinkynail" src="<?php echo esc_url( $icon ); ?>" alt="Icon" />
+                <img class="pinkynail" src="<?php echo $icon; ?>" alt="Icon" />
             </li>
 
             <li class="pods-file-col pods-file-name">

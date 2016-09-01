@@ -39,15 +39,15 @@ $options[ 'data' ] = (array) pods_var_raw( 'data', $options, array(), null, true
             var ajaxurl = '<?php echo pods_slash( admin_url( 'admin-ajax.php' ) ); ?>';
         }
 
-        function <?php echo esc_js( pods_clean_name( $attributes[ 'id' ] ) ); ?>_podsFormatResult ( item ) {
+        function <?php echo esc_js( pods_js_name( $attributes[ 'id' ] ) ); ?>_podsFormatResult ( item ) {
             return item.text;
         }
 
-        function <?php echo esc_js( pods_clean_name( $attributes[ 'id' ] ) ); ?>_podsFormatSelection ( item ) {
+        function <?php echo esc_js( pods_js_name( $attributes[ 'id' ] ) ); ?>_podsFormatSelection ( item ) {
             return item.text;
         }
 
-        var <?php echo esc_js( pods_clean_name( $attributes[ 'id' ] ) ); ?>_data = {<?php
+        var <?php echo esc_js( pods_js_name( $attributes[ 'id' ] ) ); ?>_data = {<?php
                 if ( !is_object( $pod ) || !empty( $options[ 'data' ] ) ) {
                     $data = array();
 
@@ -124,10 +124,10 @@ $options[ 'data' ] = (array) pods_var_raw( 'data', $options, array(), null, true
                 var data = [];
 
                 jQuery( element.val().split( "," ) ).each( function () {
-                    if ( 'undefined' != typeof <?php echo esc_js( pods_clean_name( $attributes[ 'id' ] ) ); ?>_data[ this ] ) {
+                    if ( 'undefined' != typeof <?php echo esc_js( pods_js_name( $attributes[ 'id' ] ) ); ?>_data[ this ] ) {
                         data.push( {
                             id : this,
-                            text : <?php echo esc_js( pods_clean_name( $attributes[ 'id' ] ) ); ?>_data[ this ].text
+                            text : <?php echo esc_js( pods_js_name( $attributes[ 'id' ] ) ); ?>_data[ this ].text
                         } );
                     }
                 } );
@@ -198,11 +198,9 @@ $options[ 'data' ] = (array) pods_var_raw( 'data', $options, array(), null, true
                             uri : '<?php echo esc_js( $uri_hash ); ?>',
                             id : '<?php echo esc_js( (int) $id ); ?>',
                             query : term<?php
-                                global $sitepress, $icl_adjust_id_url_filter_off;
-
-                                if ( is_object( $sitepress ) && !$icl_adjust_id_url_filter_off ) {
+                                if ( did_action( 'wpml_loaded' ) && apply_filters( 'wpml_setting', true, 'auto_adjust_ids' ) ) {
                             ?>,
-                                lang : '<?php echo esc_js( ICL_LANGUAGE_CODE ); ?>'
+                                lang : '<?php echo esc_js( apply_filters( 'wpml_current_language', 'all' ) ); ?>'
                             <?php
                                 }
                             ?>
@@ -212,8 +210,8 @@ $options[ 'data' ] = (array) pods_var_raw( 'data', $options, array(), null, true
                         return data;
                     }
                 },
-                formatResult : <?php echo esc_js( pods_clean_name( $attributes[ 'id' ] ) ); ?>_podsFormatResult,
-                formatSelection : <?php echo esc_js( pods_clean_name( $attributes[ 'id' ] ) ); ?>_podsFormatSelection,
+                formatResult : <?php echo esc_js( pods_js_name( $attributes[ 'id' ] ) ); ?>_podsFormatResult,
+                formatSelection : <?php echo esc_js( pods_js_name( $attributes[ 'id' ] ) ); ?>_podsFormatSelection,
                 minimumInputLength : 1
             <?php
                 }

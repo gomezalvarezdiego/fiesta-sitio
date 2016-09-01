@@ -12,7 +12,6 @@
  * @param string $results_error (optional) Throw an error if a records are found
  * @param string $no_results_error (optional) Throw an error if no records are found
  *
- * @internal param string $query The SQL query
  * @return array|bool|mixed|null|void
  * @since 2.0
  */
@@ -179,7 +178,6 @@ $pods_debug = 0;
  * @param mixed $debug The error message to be thrown / displayed
  * @param boolean $die If set to true, a die() will occur, if set to (int) 2 then a wp_die() will occur
  * @param string $prefix
- * @internal param bool $identifier If set to true, an identifying # will be output
  *
  * @return void
  *
@@ -596,7 +594,22 @@ function pods_shortcode ( $tags, $content = null ) {
 		return '';
 	}
 
+	// For enforcing pagination parameters when not displaying pagination
+	$page = 1;
+	$offset = 0;
+
+	if ( isset( $tags['page'] ) ) {
+		$page = (int) $tags['page'];
+		$page = max( $page, 1 );
+	}
+
+	if ( isset( $tags['offset'] ) ) {
+		$offset = (int) $tags['offset'];
+		$offset = max( $offset, 0 );
+	}
+
     $defaults = array(
+    	'use_current' => false,
         'name' => null,
         'id' => null,
         'slug' => null,
@@ -639,8 +652,9 @@ function pods_shortcode ( $tags, $content = null ) {
 
     $tags = apply_filters( 'pods_shortcode', $tags );
 
-	$tags[ 'pagination' ] = (boolean) $tags[ 'pagination' ];
-	$tags[ 'search' ] = (boolean) $tags[ 'search' ];
+	$tags[ 'pagination' ] = filter_var($tags[ 'pagination' ], FILTER_VALIDATE_BOOLEAN);
+	$tags[ 'search' ] = filter_var($tags[ 'pagination' ], FILTER_VALIDATE_BOOLEAN);
+	$tags[ 'use_current' ] = filter_var($tags[ 'use_current' ], FILTER_VALIDATE_BOOLEAN);
 
     if ( empty( $content ) )
         $content = null;
@@ -660,7 +674,7 @@ function pods_shortcode ( $tags, $content = null ) {
 		return $return;
 	}
 
-    if ( empty( $tags[ 'name' ] ) ) {
+    if ( ! $tags['use_current'] && empty( $tags[ 'name' ] ) ) {
         if ( in_the_loop() || is_singular() ) {
             $pod = pods( get_post_type(), get_the_ID(), false );
 
@@ -690,7 +704,7 @@ function pods_shortcode ( $tags, $content = null ) {
         return '<p>Please provide either a template or field name</p>';
     }
 
-    if ( !isset( $id ) ) {
+    if ( ! $tags['use_current'] && !isset( $id ) ) {
         // id > slug (if both exist)
 		$id = null;
 
@@ -705,20 +719,32 @@ function pods_shortcode ( $tags, $content = null ) {
         if ( !empty( $tags[ 'id' ] ) ) {
             $id = $tags[ 'id' ];
 
+            if ( defined( 'PODS_SHORTCODE_ALLOW_EVALUATE_TAGS' ) && PODS_SHORTCODE_ALLOW_EVALUATE_TAGS ) {
+                $id = pods_evaluate_tags( $id );
+            }
+
             if ( is_numeric( $id ) )
                 $id = absint( $id );
         }
     }
 
-    if ( !isset( $pod ) )
-        $pod = pods( $tags[ 'name' ], $id );
+    if ( !isset( $pod ) ) {
+    	if ( ! $tags['use_current'] ) {
+        	$pod = pods( $tags[ 'name' ], $id );
+    	} else {
+    		$pod = pods();
+    		$id = $pod->id();
+    	}
+    }
 
-    if ( empty( $pod ) )
+    if ( empty( $pod ) || ! $pod->valid() )
         return '<p>Pod not found</p>';
 
 	$found = 0;
+	
+	$is_singular = ( ! empty( $id ) || $tags['use_current'] );
 
-	if ( empty( $id ) ) {
+	if ( ! $is_singular ) {
 		$params = array();
 
 		if ( !defined( 'PODS_DISABLE_SHORTCODE_SQL' ) || !PODS_DISABLE_SHORTCODE_SQL ) {
@@ -762,14 +788,27 @@ function pods_shortcode ( $tags, $content = null ) {
 
 			$params[ 'search' ] = $tags[ 'search' ];
 
-			if ( 0 < absint( $tags[ 'page' ] ) ) {
-				$params[ 'page' ] = absint( $tags[ 'page' ] );
-			}
-
 			$params[ 'pagination' ] = $tags[ 'pagination' ];
 
-			if ( 0 < (int) $tags[ 'offset' ] ) {
-				$params[ 'offset' ] = (int) $tags[ 'offset' ];
+			// If we aren't displaying pagination, we need to enforce page/offset
+			if ( ! $params['pagination'] ) {
+				$params['page']   = $page;
+				$params['offset'] = $offset;
+
+				// Force pagination on, we need it and we're enforcing page/offset
+				$params['pagination'] = true;
+			} else {
+				// If we are displaying pagination, allow page/offset override only if *set*
+
+				if ( isset( $tags['page'] ) ) {
+					$params['page'] = (int) $tags['page'];
+					$params['page'] = max( $params['page'], 1 );
+				}
+
+				if ( isset( $tags['offset'] ) ) {
+					$params['offset'] = (int) $tags['offset'];
+					$params['offset'] = max( $params['offset'], 0 );
+				}
 			}
 
 			if ( !empty( $tags[ 'cache_mode' ] ) && 'none' != $tags[ 'cache_mode' ] ) {
@@ -792,7 +831,7 @@ function pods_shortcode ( $tags, $content = null ) {
 				return '';
 			}
 			// Only explicitly allow user edit forms
-			elseif ( !empty( $id ) && ( !defined( 'PODS_SHORTCODE_ALLOW_USER_EDIT' ) || !PODS_SHORTCODE_ALLOW_USER_EDIT ) ) {
+			elseif ( $is_singular && ( !defined( 'PODS_SHORTCODE_ALLOW_USER_EDIT' ) || !PODS_SHORTCODE_ALLOW_USER_EDIT ) ) {
 				return '';
 			}
 		}
@@ -828,18 +867,18 @@ function pods_shortcode ( $tags, $content = null ) {
 
     ob_start();
 
-    if ( empty( $id ) && false !== $tags[ 'filters' ] && 'before' == $tags[ 'filters_location' ] )
+    if ( ! $is_singular && false !== $tags[ 'filters' ] && 'before' == $tags[ 'filters_location' ] )
         echo $pod->filters( $tags[ 'filters' ], $tags[ 'filters_label' ] );
 
-    if ( empty( $id ) && 0 < $found && true === $tags[ 'pagination' ] && in_array( $tags[ 'pagination_location' ], array( 'before', 'both' ) ) )
+    if ( ! $is_singular && 0 < $found && true === $tags[ 'pagination' ] && in_array( $tags[ 'pagination_location' ], array( 'before', 'both' ) ) )
         echo $pod->pagination( $tags[ 'pagination_label' ] );
 
     echo $pod->template( $tags[ 'template' ], $content );
 
-    if ( empty( $id ) && 0 < $found && true === $tags[ 'pagination' ] && in_array( $tags[ 'pagination_location' ], array( 'after', 'both' ) ) )
+    if ( ! $is_singular && 0 < $found && true === $tags[ 'pagination' ] && in_array( $tags[ 'pagination_location' ], array( 'after', 'both' ) ) )
         echo $pod->pagination( $tags[ 'pagination_label' ] );
 
-    if ( empty( $id ) && false !== $tags[ 'filters' ] && 'after' == $tags[ 'filters_location' ] )
+    if ( ! $is_singular && false !== $tags[ 'filters' ] && 'after' == $tags[ 'filters_location' ] )
         echo $pod->filters( $tags[ 'filters' ], $tags[ 'filters_label' ] );
 
 	$return = ob_get_clean();
@@ -1097,7 +1136,7 @@ function pods_redirect ( $location, $status = 302 ) {
 function pods_permission ( $options ) {
     global $current_user;
 
-    get_currentuserinfo();
+    wp_get_current_user();
 
     $permission = false;
 
@@ -1225,7 +1264,7 @@ function pods_by_title ( $title, $output = OBJECT, $type = 'page', $status = nul
     $page = $wpdb->get_var( $wpdb->prepare( "SELECT `ID` FROM `{$wpdb->posts}` WHERE `post_title` = %s AND `post_type` = %s" . $status_sql . $orderby_sql, $prepared ) );
 
     if ( $page )
-        return get_post( $page, $output );
+        return get_post( pods_v( $page, 'post_id' ), $output );
 
     return null;
 }
@@ -1758,6 +1797,11 @@ function pods_is_plugin_active ( $plugin ) {
 function pods_no_conflict_check ( $object_type = 'post' ) {
     if ( 'post_type' == $object_type )
         $object_type = 'post';
+    elseif ( 'term' == $object_type )
+        $object_type = 'taxonomy';
+
+    if ( ! class_exists( 'PodsInit' ) ) 
+        pods_init();
 
     if ( !empty( PodsInit::$no_conflict ) && isset( PodsInit::$no_conflict[ $object_type ] ) && !empty( PodsInit::$no_conflict[ $object_type ] ) )
         return true;
@@ -1781,6 +1825,9 @@ function pods_no_conflict_on ( $object_type = 'post', $object = null ) {
         $object_type = 'post';
     elseif ( 'term' == $object_type )
         $object_type = 'taxonomy';
+
+    if ( ! class_exists( 'PodsInit' ) ) 
+        pods_init();
 
     if ( !empty( PodsInit::$no_conflict ) && isset( PodsInit::$no_conflict[ $object_type ] ) && !empty( PodsInit::$no_conflict[ $object_type ] ) )
         return true;
@@ -1821,7 +1868,17 @@ function pods_no_conflict_on ( $object_type = 'post', $object = null ) {
 		if ( apply_filters( 'pods_meta_handler', true, 'term' ) ) {
             // Handle *_term_meta
 			if ( apply_filters( 'pods_meta_handler_get', true, 'term' ) ) {
-        		$no_conflict[ 'filter' ] = array();
+				$no_conflict[ 'filter' ] = array_merge( $no_conflict[ 'filter' ], array(
+					array( 'get_term_metadata', array( PodsInit::$meta, 'get_term_meta' ), 10, 4 )
+				) );
+			}
+			
+			if ( !pods_tableless() ) {
+				$no_conflict[ 'filter' ] = array_merge( $no_conflict[ 'filter' ], array(
+					array( 'add_term_metadata', array( PodsInit::$meta, 'add_term_meta' ), 10, 5 ),
+					array( 'update_term_metadata', array( PodsInit::$meta, 'update_term_meta' ), 10, 5 ),
+					array( 'delete_term_metadata', array( PodsInit::$meta, 'delete_term_meta' ), 10, 5 )
+				) );
 			}
 
 			$no_conflict[ 'action' ] = array(
@@ -1956,6 +2013,11 @@ function pods_no_conflict_on ( $object_type = 'post', $object = null ) {
 function pods_no_conflict_off ( $object_type = 'post' ) {
     if ( 'post_type' == $object_type )
         $object_type = 'post';
+    elseif ( 'term' == $object_type )
+        $object_type = 'taxonomy';
+
+    if ( ! class_exists( 'PodsInit' ) ) 
+        pods_init();
 
     if ( empty( PodsInit::$no_conflict ) || !isset( PodsInit::$no_conflict[ $object_type ] ) || empty( PodsInit::$no_conflict[ $object_type ] ) )
         return false;

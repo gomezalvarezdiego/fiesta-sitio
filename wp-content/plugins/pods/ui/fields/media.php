@@ -19,6 +19,20 @@ $attributes = array();
 $attributes = PodsForm::merge_attributes( $attributes, $name, $form_field_type, $options );
 
 $css_id = $attributes[ 'id' ];
+if ( empty( $options['file_field_template'] ) ) {
+    $options['file_field_template'] = 'rows';
+}
+$attributes[ 'class' ] .= ' pods-field-template-'.$options['file_field_template'];
+
+switch ( $options['file_field_template'] ) {
+    case 'tiles':
+        $jquery_ui_sortable_axis = '';
+        break;
+    case 'rows':
+    default:
+        $jquery_ui_sortable_axis = 'y';
+        break;
+}
 
 $router = pods_var( $form_field_type . '_attachment_tab', $options, 'browse' );
 
@@ -139,18 +153,18 @@ else
 <script type="text/javascript">
     jQuery( function( $ ){
 
-        var $element_<?php echo esc_js( pods_clean_name( $attributes[ 'id' ] ) ); ?> = $( '#<?php echo esc_js( $css_id ); ?>' ),
-            $list_<?php echo esc_js( pods_clean_name( $attributes[ 'id' ] ) ); ?> = $( '#<?php echo esc_js( $css_id ); ?> ul.pods-files-list' ),
-            title_<?php echo esc_js( pods_clean_name( $attributes[ 'id' ] ) ); ?> = "<?php echo esc_js( pods_var_raw( $form_field_type . '_modal_title', $options, __( 'Attach a file', 'pods' ) ) ); ?>",
-            button_<?php echo esc_js( pods_clean_name( $attributes[ 'id' ] ) ); ?> = "<?php echo esc_js( pods_var_raw( $form_field_type . '_modal_add_button', $options, __( 'Add File', 'pods' ) ) ); ?>",
-            pods_media_<?php echo esc_js( pods_clean_name( $attributes[ 'id' ] ) ); ?>,
-            maxFiles_<?php echo esc_js( pods_clean_name( $attributes[ 'id' ] ) ); ?> = <?php echo esc_js( $file_limit ); ?>;
+        var $element_<?php echo esc_js( pods_js_name( $attributes[ 'id' ] ) ); ?> = $( '#<?php echo esc_js( $css_id ); ?>' ),
+            $list_<?php echo esc_js( pods_js_name( $attributes[ 'id' ] ) ); ?> = $( '#<?php echo esc_js( $css_id ); ?> ul.pods-files-list' ),
+            title_<?php echo esc_js( pods_js_name( $attributes[ 'id' ] ) ); ?> = "<?php echo esc_js( pods_var_raw( $form_field_type . '_modal_title', $options, __( 'Attach a file', 'pods' ) ) ); ?>",
+            button_<?php echo esc_js( pods_js_name( $attributes[ 'id' ] ) ); ?> = "<?php echo esc_js( pods_var_raw( $form_field_type . '_modal_add_button', $options, __( 'Add File', 'pods' ) ) ); ?>",
+            pods_media_<?php echo esc_js( pods_js_name( $attributes[ 'id' ] ) ); ?>,
+            maxFiles_<?php echo esc_js( pods_js_name( $attributes[ 'id' ] ) ); ?> = <?php echo esc_js( $file_limit ); ?>;
 
         <?php if ( 1 != $file_limit ) { ?>
             // init sortable
-            $list_<?php echo esc_js( pods_clean_name( $attributes[ 'id' ] ) ); ?>.sortable( {
+            $list_<?php echo esc_js( pods_js_name( $attributes[ 'id' ] ) ); ?>.sortable( {
                 containment : 'parent',
-                axis: 'y',
+                axis: '<?php echo $jquery_ui_sortable_axis; ?>',
                 scrollSensitivity : 40,
                 tolerance : 'pointer',
                 opacity : 0.6
@@ -158,11 +172,25 @@ else
         <?php } ?>
 
         // hook delete links
-        $element_<?php echo esc_js( pods_clean_name( $attributes[ 'id' ] ) ); ?>.on( 'click', 'li.pods-file-delete a', function ( e ) {
+        $element_<?php echo esc_js( pods_js_name( $attributes[ 'id' ] ) ); ?>.on( 'click', 'li.pods-file-delete a', function ( e ) {
 			e.preventDefault();
 
             var podsfile = $( this ).parent().parent().parent();
+            <?php 
+            switch ( $options['file_field_template'] ) {
+                case 'tiles':
+            ?>
+            podsfile.fadeOut( function () {
+            <?php
+                    break;
+                case 'rows':
+                default:
+            ?>
             podsfile.slideUp( function () {
+            <?php
+                    break;
+            }
+            ?>
                 // check to see if this was the only entry
                 if ( podsfile.parent().children().length == 1 ) { // 1 because we haven't removed our target yet
                     podsfile.parent().hide();
@@ -172,7 +200,7 @@ else
             } );
         } );
 
-        $element_<?php echo esc_js( pods_clean_name( $attributes[ 'id' ] ) ); ?>.on( 'click', '.pods-file-add', function( event ) {
+        $element_<?php echo esc_js( pods_js_name( $attributes[ 'id' ] ) ); ?>.on( 'click', '.pods-file-add', function( event ) {
             var options, attachment;
 
             event.preventDefault();
@@ -186,14 +214,14 @@ else
 	        wp.Uploader.defaults.filters.mime_types[0].extensions = "<?php echo esc_js( $limit_extensions ); ?>";
 
             // if the frame already exists, open it
-            if ( pods_media_<?php echo esc_js( pods_clean_name( $attributes[ 'id' ] ) ); ?> ) {
-                pods_media_<?php echo esc_js( pods_clean_name( $attributes[ 'id' ] ) ); ?>.open();
-                pods_media_<?php echo esc_js( pods_clean_name( $attributes[ 'id' ] ) ); ?>.content.mode('<?php echo esc_js( $router ); ?>');
+            if ( pods_media_<?php echo esc_js( pods_js_name( $attributes[ 'id' ] ) ); ?> ) {
+                pods_media_<?php echo esc_js( pods_js_name( $attributes[ 'id' ] ) ); ?>.open();
+                pods_media_<?php echo esc_js( pods_js_name( $attributes[ 'id' ] ) ); ?>.content.mode('<?php echo esc_js( $router ); ?>');
             }
             else {
                 // set our settings
-                pods_media_<?php echo esc_js( pods_clean_name( $attributes[ 'id' ] ) ); ?> = wp.media({
-                    title: title_<?php echo esc_js( pods_clean_name( $attributes[ 'id' ] ) ); ?>,
+                pods_media_<?php echo esc_js( pods_js_name( $attributes[ 'id' ] ) ); ?> = wp.media({
+                    title: title_<?php echo esc_js( pods_js_name( $attributes[ 'id' ] ) ); ?>,
 
                     <?php if( $file_limit !== 1 ) : ?>
                         multiple: true,
@@ -208,14 +236,14 @@ else
                     // Customize the submit button.
                     button: {
                         // Set the text of the button.
-                        text: button_<?php echo esc_js( pods_clean_name( $attributes[ 'id' ] ) ); ?>
+                        text: button_<?php echo esc_js( pods_js_name( $attributes[ 'id' ] ) ); ?>
                     }
                 });
 
                 // set up our select handler
-                pods_media_<?php echo esc_js( pods_clean_name( $attributes[ 'id' ] ) ); ?>.on( 'select', function() {
+                pods_media_<?php echo esc_js( pods_js_name( $attributes[ 'id' ] ) ); ?>.on( 'select', function() {
 
-                    selection = pods_media_<?php echo esc_js( pods_clean_name( $attributes[ 'id' ] ) ); ?>.state().get( 'selection' );
+                    selection = pods_media_<?php echo esc_js( pods_js_name( $attributes[ 'id' ] ) ); ?>.state().get( 'selection' );
 
                     if ( ! selection )
                         return;
@@ -243,7 +271,7 @@ else
                         }
 
                         <?php if ( !empty( $limit_types ) ) : ?>
-                            if ( '<?php echo esc_js( implode( '\' != attachment.attributes.type && \'', explode( ',', $limit_types ) ) ); ?>' != attachment.attributes.type )
+                            if ( '<?php echo implode( '\' != attachment.attributes.type && \'', explode( ',', pods_slash( $limit_types ) ) ); ?>' != attachment.attributes.type )
                                 return;
                         <?php endif; ?>
 
@@ -260,19 +288,19 @@ else
 
                         var html = tmpl( binding );
 
-                        $list_<?php echo esc_js( pods_clean_name( $attributes[ 'id' ] ) ); ?>.prepend( html );
+                        $list_<?php echo esc_js( pods_js_name( $attributes[ 'id' ] ) ); ?>.prepend( html );
 
-                        if ( !$list_<?php echo esc_js( pods_clean_name( $attributes[ 'id' ] ) ); ?>.is( ':visible' ) )
-                            $list_<?php echo esc_js( pods_clean_name( $attributes[ 'id' ] ) ); ?>.show().removeClass( 'hidden' );
+                        if ( !$list_<?php echo esc_js( pods_js_name( $attributes[ 'id' ] ) ); ?>.is( ':visible' ) )
+                            $list_<?php echo esc_js( pods_js_name( $attributes[ 'id' ] ) ); ?>.show().removeClass( 'hidden' );
 
-                        $list_<?php echo esc_js( pods_clean_name( $attributes[ 'id' ] ) ); ?>.find( 'li.pods-file:first' ).slideDown( 'fast' );
+                        $list_<?php echo esc_js( pods_js_name( $attributes[ 'id' ] ) ); ?>.find( 'li.pods-file:first' ).slideDown( 'fast' );
 
-                        var items = $list_<?php echo esc_js( pods_clean_name( $attributes[ 'id' ] ) ); ?>.find( 'li.pods-file' ),
+                        var items = $list_<?php echo esc_js( pods_js_name( $attributes[ 'id' ] ) ); ?>.find( 'li.pods-file' ),
                             itemCount = items.size();
 
-                        if ( 0 < maxFiles_<?php echo esc_js( pods_clean_name( $attributes[ 'id' ] ) ); ?> && itemCount > maxFiles_<?php echo esc_js( pods_clean_name( $attributes[ 'id' ] ) ); ?> ) {
+                        if ( 0 < maxFiles_<?php echo esc_js( pods_js_name( $attributes[ 'id' ] ) ); ?> && itemCount > maxFiles_<?php echo esc_js( pods_js_name( $attributes[ 'id' ] ) ); ?> ) {
                             items.each( function ( idx, elem ) {
-                                if ( idx + 1 > maxFiles_<?php echo esc_js( pods_clean_name( $attributes[ 'id' ] ) ); ?> ) {
+                                if ( idx + 1 > maxFiles_<?php echo esc_js( pods_js_name( $attributes[ 'id' ] ) ); ?> ) {
                                     jQuery( elem ).remove();
                                 }
                             } );
@@ -281,8 +309,8 @@ else
                 });
 
                 // open the frame
-                pods_media_<?php echo esc_js( pods_clean_name( $attributes[ 'id' ] ) ); ?>.open();
-                pods_media_<?php echo esc_js( pods_clean_name( $attributes[ 'id' ] ) ); ?>.content.mode('<?php echo esc_js( $router ); ?>');
+                pods_media_<?php echo esc_js( pods_js_name( $attributes[ 'id' ] ) ); ?>.open();
+                pods_media_<?php echo esc_js( pods_js_name( $attributes[ 'id' ] ) ); ?>.content.mode('<?php echo esc_js( $router ); ?>');
             }
 
             // Reset the allowed file extensions
