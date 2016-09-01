@@ -13,10 +13,10 @@
      var injectTemplate, template;
      // Change the attachment-details html
      injectTemplate = _.template("<a class=\"pte\" href=\"" +
-                                 pteL10n.fallbackUrl.replace(/&TB_iframe=true/,'') + 
+                                 pteL10n.fallbackUrl.replace(/&TB_iframe=true/,'') +
                                  "\">\n   " +
                                  pteL10n.PTE +
-                                 "\n</a>", {id:"{{ data.id }}"});
+                                 "\n</a>")({id:"{{ data.id }}"});
      template = $("#tmpl-attachment-details").text();
      template = template.replace(/(<div class="compat-meta">)/, "" + injectTemplate + "\n$1");
      $("#tmpl-attachment-details").text(template);
@@ -78,11 +78,13 @@
    });
 
    // Set the featuredImage object as `this` for the frame function...
-   oldFeaturedImageFrame = $.proxy( wp.media.featuredImage.frame, wp.media.featuredImage );
-   wp.media.featuredImage.frame = function() {
-      var frame = oldFeaturedImageFrame()
-      frame.setState('library')
-      return frame;
+   if ( typeof wp.media.featuredImage !== 'undefined' ) {
+      oldFeaturedImageFrame = $.proxy( wp.media.featuredImage.frame, wp.media.featuredImage );
+      wp.media.featuredImage.frame = function() {
+         var frame = oldFeaturedImageFrame()
+         frame.setState('library')
+         return frame;
+      }
    }
 
    // Overwrite the MediaFrame.Post class
