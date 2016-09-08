@@ -4,7 +4,7 @@
 	 $args = array(
 	   'post_type' => 'post',
 	   'order' => 'ASC',
-	   'posts_per_page'=>'-1',
+	   'posts_per_page'=>'1',
 	   'post_status'=>array('publish'),
 	   'meta_query' => array(
 	       array(
@@ -17,11 +17,16 @@
 	 $post = new WP_Query($args);
      $finalContent=$post->posts;
 
+     $finalContent1[]=$finalContent[0];
+     $finalContent1[]=$finalContent[1];
+     $finalContent1[]=$finalContent[2];
+     $finalContent1[]=$finalContent[3];
+
 	 ////////VARS////////
      $arrayHolder=array();
      $keyCounter=0;
      $setCardsCounter=0;
-	 foreach ($finalContent as $key => $post) {
+	 foreach ($finalContent1 as $key => $post) {
 		$post_id=$post->ID;
         $post_title=$post->post_title;
         $post_content=$post->post_content;
@@ -43,7 +48,7 @@
 	 		"postInfo"=>$postInfo						
 	 	);
 	 	$module=$key+1;
-	 	if($module % 3==0 && $key!=0 ){
+	 	if($module % 4==0 && $key!=0 ){
 	 		$contentVarsHolder[$setCardsCounter]=$arrayHolder;
 	 		$arrayHolder=array();
 	 		$setCardsCounter++;
@@ -108,6 +113,8 @@
 						</article>
 
 						<?php endif?>
+
+						
 	  			</div>
 
 			<?php } ?>

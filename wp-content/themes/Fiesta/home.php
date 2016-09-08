@@ -4,6 +4,10 @@
 		<?php putRevSlider( "home" ); ?>		
 	</section>
 
+	
+<!-- 	BOXED MENU TEMPLATE -->
+<?php get_template_part('template','box_menu'); ?>
+
 <!-- 	CONTENIDOS TEMPLATE -->
 
 	<?php get_template_part('template','contenidos'); ?>
@@ -14,7 +18,7 @@
 
 <!-- 	VIDEOS TEMPLATE -->
 
-	<?php get_template_part('template','videos'); ?>
+	<?php // get_template_part('template','videos'); ?>
 
 
 <!-- 	MAPAS TEMPLATE -->

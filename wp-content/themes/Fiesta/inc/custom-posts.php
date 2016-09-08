@@ -1,8 +1,45 @@
 <?php
 
 
+/* ------------------ CAJAS DE MENÚ-----------------------*/
 
 
+$labels = array(
+    'name'               => __('Menu', 'omega-admin-td'),
+    'singular_name'      => __('Menu', 'omega-admin-td'),
+    'add_new'            => __('Agregar Nueva Opción', 'omega-admin-td'),
+    'add_new_item'       => __('Agregar Nueva Opción', 'omega-admin-td'),
+    'edit_item'          => __('Editar Opción', 'omega-admin-td'),
+    'new_item'           => __('Nueva Opción', 'omega-admin-td'),
+    'all_items'          => __('Todas las opciones', 'omega-admin-td'),
+    'view_item'          => __('Ver Opciones', 'omega-admin-td'),
+    'search_items'       => __('Buscar Opciones', 'omega-admin-td'),
+    'not_found'          => __('No se encontraron Opciones', 'omega-admin-td'),
+    'not_found_in_trash' => __('No se encontraron Opciones en la papelera', 'omega-admin-td'),
+    'menu_name'          => __('Menú', 'omega-admin-td')
+);
+
+$args = array(
+    'labels'             => $labels,
+    'public'             => true,
+    'publicly_queryable' => true,
+    'show_ui'            => true,
+    'show_in_menu'       => true,
+    'query_var'          => true,
+    'capability_type'    => 'post',
+    'has_archive'        => true,
+    'hierarchical'       => false,
+    'menu_position'      => null,
+    'menu_icon'          => 'dashicons-welcome-learn-more',
+    'supports'           => array( 'title', 'thumbnail')
+);
+register_post_type('box_menu', $args);
+
+
+
+
+
+//Frases destacadas//
 $labels = array(
     'name'               => __('Frases Destacadas', 'omega-admin-td'),
     'singular_name'      => __('Frase destacada', 'omega-admin-td'),

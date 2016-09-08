@@ -17,7 +17,7 @@
 	
 	<div id="home-testimonial" class="grid-overlay-20">
 		<section class="row max-row">
-			<div class="col-md-12">
+			<div class="col-md-12" style="height: 10px;>
 				<h1 data-os-animation-delay="0s" data-os-animation="fadeInLeft" class="mde-line-title no-line center bottom_spacer big os-animation"><span></span></h1>
 			</div>
 			<div class="col-md-12 slide-home-perfil">
