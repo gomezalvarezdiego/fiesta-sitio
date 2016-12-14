@@ -21,6 +21,14 @@
      $finalContent1[]=$finalContent[1];
      $finalContent1[]=$finalContent[2];
      $finalContent1[]=$finalContent[3];
+     $finalContent1[]=$finalContent[4];
+     $finalContent1[]=$finalContent[5];
+     $finalContent1[]=$finalContent[6];
+     $finalContent1[]=$finalContent[7];
+     $finalContent1[]=$finalContent[8];
+     $finalContent1[]=$finalContent[9];
+     $finalContent1[]=$finalContent[10];
+     $finalContent1[]=$finalContent[11];
 
 	 ////////VARS////////
      $arrayHolder=array();
