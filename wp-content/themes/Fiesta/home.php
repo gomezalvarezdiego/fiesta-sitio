@@ -6,7 +6,7 @@
 
 	
 <!-- 	BOXED MENU TEMPLATE -->
-<?php get_template_part('template','box_menu'); ?>
+<?php //get_template_part('template','box_menu'); ?>
 
 <!-- 	CONTENIDOS TEMPLATE -->
 
